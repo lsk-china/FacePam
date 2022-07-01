@@ -1,7 +1,7 @@
 # FacePam
 Linux face recognition PAM module
 
-To build it, you need to install seeta face6. You can get this from [thier offical Github Repository](https://github.com/seetafaceengine/SeetaFace6/), or ask me for a built archlinux package. You also need to get the models. 
+To build it, you need to install seeta face6. You can get this from [their offical Github Repository](https://github.com/seetafaceengine/SeetaFace6/), or ask me for a built archlinux package. You also need to get the models. 
 You also need opencv.
 
 ## TODO
