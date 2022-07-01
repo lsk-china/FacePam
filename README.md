@@ -9,3 +9,4 @@ You also need opencv.
 - Complete the Makefile.
 - Make a sddm theme for it.
 - Rebuild it with DBus. I'll release v2.0.0 for it. 
+- Tidy up files
