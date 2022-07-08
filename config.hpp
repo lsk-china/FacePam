@@ -12,6 +12,7 @@ using namespace std;
 class Config {
     public:
         Config();
+        ~Config();
         string faceDetectorModel;
         string faceLandmarkerModel;
         string faceRecognizerModel;
@@ -19,9 +20,12 @@ class Config {
         string logPath;
         bool   loadSucceed;
         float  confidenceGate;
+        void   writeToLog(const string);
     private:
         void   loadProperties();
-        string defaultModelPath = "/usr/share/seetaface/models";
+        string modelPath = "/usr/share/seetaface/models";
+        void   initModelPaths();
+        ofstream logFp;
 };
 #endif
 
