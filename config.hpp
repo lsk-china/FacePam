@@ -5,6 +5,7 @@
 #include <boost/property_tree/ini_parser.hpp>
 #include <fstream>
 #include <iostream>
+#include <vector>
 
 using namespace boost::property_tree; 
 using namespace std;
@@ -21,6 +22,7 @@ class Config {
         bool   loadSucceed;
         float  confidenceGate;
         void   writeToLog(const string);
+        std::vector<string> getModelPaths();
     private:
         void   loadProperties();
         string modelPath = "/usr/share/seetaface/models";

@@ -1,7 +1,7 @@
 #include "seeta_recognizer.hpp"
 
-Recognizer::Recognizer(const string knownFacesDir) {
-    loadModels();
+Recognizer::Recognizer(const string knownFacesDir, vector<string> models) {
+    loadModels(models);
     loadKnownFeatures(this->fd, this->fl, this->fr, knownFacesDir, &this->knownFeatures);
 }
 
@@ -12,20 +12,20 @@ void Recognizer::convertImage(Mat cvImage, SeetaImageData *seetaImage) {
     seetaImage->data = cvImage.data;
 }
 
-void Recognizer::loadModels() {
+void Recognizer::loadModels(vector<string> models) {
     ModelSetting fd_settings;
     fd_settings.set_device(SEETA_DEVICE_AUTO);
-    fd_settings.append("/usr/share/seetaface/models/face_detector.csta");
+    fd_settings.append(models.at(0));
     this->fd = new FaceDetector(fd_settings);
 
     ModelSetting fl_settings;
     fl_settings.set_device(SEETA_DEVICE_AUTO);
-    fl_settings.append("/usr/share/seetaface/models/face_landmarker_pts5.csta");
+    fl_settings.append(models.at(1));
     this->fl = new FaceLandmarker(fl_settings);
 
     ModelSetting fr_settings;
     fr_settings.set_device(SEETA_DEVICE_AUTO);
-    fr_settings.append("/usr/share/seetaface/models/face_recognizer.csta");
+    fr_settings.append(models.at(2));
     this->fr = new FaceRecognizer(fr_settings);
 }
 

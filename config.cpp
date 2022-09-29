@@ -45,3 +45,11 @@ void Config::loadProperties() {
 void Config::writeToLog(const string message) {
     this->logFp << message << endl;
 }
+
+vector<string> Config::getModelPaths() {
+    vector<string> result;
+    result.push_back(this->faceDetectorModel);
+    result.push_back(this->faceLandmarkerModel);
+    result.push_back(this->faceRecognizerModel);
+    return result;
+}

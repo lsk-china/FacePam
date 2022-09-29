@@ -20,7 +20,7 @@ using namespace filesystem;
 
 class Recognizer {
     public:
-        Recognizer(const string);
+        Recognizer(const string, vector<string>);
         vector<pair<string, float>> recognize(Mat);
     private:
         FaceDetector *fd;
@@ -28,7 +28,7 @@ class Recognizer {
         FaceLandmarker *fl;
         map<string, shared_ptr<float>> knownFeatures;
         
-        void loadModels();
+        void loadModels(vector<string>);
         void loadKnownFeatures(const FaceDetector *,
                                const FaceLandmarker *,
                                const FaceRecognizer *,

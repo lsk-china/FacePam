@@ -8,6 +8,7 @@
 #include <opencv2/core/core.hpp>
 #include <iostream>
 #include <fstream>
+#include "config.hpp"
 
 using namespace cv;
 using namespace std;
@@ -24,15 +25,13 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, cons
     int ret = 0;
     char *pass = NULL;
 
+    Config config;
+
     const char* username;
     ret = pam_get_user(pamh, &username, "Username");
     if (ret != PAM_SUCCESS) {
         return PAM_SYSTEM_ERR;
     }
-    ofstream logfile;
-    logfile.open("/data/lsk/pam/test2_pam.log", ios::out);
-    logfile << username << endl;
-
     struct pam_conv *conv = NULL;
     ret = pam_get_item(pamh, PAM_CONV, (const void **)&conv);
     if (ret != PAM_SUCCESS || conv == NULL) {
@@ -55,11 +54,12 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, cons
     VideoCapture cap(0);
     Mat img;
     cap >> img;
-    Recognizer *recognizer = new Recognizer("/data/lsk/face_recognition/faces");
+    if (img.empty()) {
+        return PAM_AUTH_ERR;
+    }
+    Recognizer *recognizer = new Recognizer("/data/lsk/face_recognition/faces", config.getModelPaths());
     vector<pair<string, float>> result = recognizer->recognize(img);
     pair<string, float> similarist = result[0];
-    logfile << similarist.first << ": " << similarist.second << endl;
-    logfile.close();
     if (similarist.first != username || similarist.second < 0.6) {
         return PAM_AUTH_ERR;
     }
