@@ -1,11 +1,13 @@
 #include "seeta_recognizer.hpp"
 
-Recognizer::Recognizer(const string knownFacesDir, vector<string> models) {
-    loadModels(models);
+#include <utility>
+
+Recognizer::Recognizer(const string& knownFacesDir, vector<string> models) {
+    loadModels(std::move(models));
     loadKnownFeatures(this->fd, this->fl, this->fr, knownFacesDir, &this->knownFeatures);
 }
 
-void Recognizer::convertImage(Mat cvImage, SeetaImageData *seetaImage) {
+void Recognizer::convertImage(const Mat& cvImage, SeetaImageData *seetaImage) {
     seetaImage->height = cvImage.rows;
     seetaImage->width = cvImage.cols;
     seetaImage->channels = cvImage.channels();
@@ -32,21 +34,21 @@ void Recognizer::loadModels(vector<string> models) {
 void Recognizer::loadKnownFeatures(const FaceDetector *fd,
                        const FaceLandmarker *fl,
                        const FaceRecognizer *fr,
-		       const string knownFacesDir,
+		       const string& knownFacesDir,
                        map<string, shared_ptr<float>> *features) {
     DIR* dp = opendir(knownFacesDir.c_str());
     if (!dp) {
         cout << "open faces dir failed!" << endl;
         return;
     }
-    for (dirent* entry = readdir(dp); entry != NULL; entry = readdir(dp)) {
+    for (dirent* entry = readdir(dp); entry != nullptr; entry = readdir(dp)) {
         string fname = entry->d_name;
         if (strcmp(".", fname.c_str()) == 0 || strcmp("..", fname.c_str()) == 0) {
             continue;
         }
         string fpath = knownFacesDir;
         fpath.append("/");
-        fpath.append(fname.c_str());
+        fpath.append(fname);
         shared_ptr<float> feature(new float[fr->GetExtractFeatureSize()]);
         Mat image = imread(fpath);
         extract_feature(fd, fl, fr, image, feature.get());
@@ -58,9 +60,9 @@ void Recognizer::loadKnownFeatures(const FaceDetector *fd,
 void Recognizer::extract_feature(const FaceDetector *FD,
                      const FaceLandmarker *FL,
                      const FaceRecognizer *FR,
-                     Mat image,
+                     const Mat& image,
                      float *feature){
-    SeetaImageData img;
+    SeetaImageData img{};
     convertImage(image, &img);
     auto faces = FD->detect(img);
 
@@ -74,8 +76,8 @@ void Recognizer::extract_feature(const FaceDetector *FD,
     FR->Extract(img, points, feature);
 }
 
-bool Recognizer::cmp(const pair<string, float> p1,
-                    const pair<string, float> p2) {
+bool Recognizer::cmp(const pair<string, float>& p1,
+                    const pair<string, float>& p2) {
    return p1.second > p2.second; 
 }
 
@@ -88,7 +90,7 @@ vector<pair<string, float>> Recognizer::recognize(Mat img) {
         string name = knownIt->first;
         shared_ptr<float> feature = knownIt->second;
         float sim = this->fr->CalculateSimilarity(inpFeature.get(), feature.get());
-        similarities.push_back(make_pair(name, sim));
+        similarities.emplace_back(name, sim);
     }
     sort(similarities.begin(), similarities.end(), cmp);
     return similarities;

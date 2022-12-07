@@ -20,5 +20,6 @@ add_library(FacePam SHARED
         pam_facerec.cpp
         seeta_recognizer.cpp
         seeta_recognizer.hpp)
-
+add_executable(FacePamTest test.cpp)
 TARGET_LINK_LIBRARIES(FacePam ${PKGS_DEP_LDFLAGS})
+target_link_libraries(FacePamTest ${PKGS_DEP_LDFLAGS})

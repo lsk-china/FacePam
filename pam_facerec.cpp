@@ -23,7 +23,7 @@ PAM_EXTERN int pam_sm_acct_mgmt(pam_handle_t *pamh, int flags, int argc, const c
 
 PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv) {
     int ret = 0;
-    char *pass = NULL;
+    char *pass = nullptr;
 
     Config config;
 
@@ -32,14 +32,14 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, cons
     if (ret != PAM_SUCCESS) {
         return PAM_SYSTEM_ERR;
     }
-    struct pam_conv *conv = NULL;
+    struct pam_conv *conv = nullptr;
     ret = pam_get_item(pamh, PAM_CONV, (const void **)&conv);
-    if (ret != PAM_SUCCESS || conv == NULL) {
+    if (ret != PAM_SUCCESS || conv == nullptr) {
         return PAM_SYSTEM_ERR;
     }
-    string tip = "Authenicating...";
+    string tip = "Authenticating...";
 
-    struct pam_message msg;
+    struct pam_message msg{};
     const struct pam_message *pmsg;
     struct pam_response *presp;
     msg.msg_style = PAM_TEXT_INFO;
@@ -47,17 +47,16 @@ PAM_EXTERN int pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, cons
     pmsg = &msg;
 
     ret = conv->conv(1, &pmsg, &presp, conv->appdata_ptr);
-    if (ret != PAM_SUCCESS || presp == NULL) {
+    if (ret != PAM_SUCCESS || presp == nullptr) {
         return PAM_CONV_ERR;
     }
     
     VideoCapture cap(0);
     Mat img;
-    cap >> img;
-    if (img.empty()) {
+    if (!cap.read(img)) {
         return PAM_AUTH_ERR;
     }
-    Recognizer *recognizer = new Recognizer("/data/lsk/face_recognition/faces", config.getModelPaths());
+    auto *recognizer = new Recognizer("/data/lsk/face_recognition/faces", config.getModelPaths());
     vector<pair<string, float>> result = recognizer->recognize(img);
     pair<string, float> similarist = result[0];
     if (similarist.first != username || similarist.second < 0.6) {
